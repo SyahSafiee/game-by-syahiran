@@ -1,0 +1,9 @@
+{
+  "id": "npc_groundskeeper",
+  "name": "Groundskeeper",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Nice day for a walk around campus, isn't it?",
+    "Try not to trample the flower beds on your way through."
+  ]
+}

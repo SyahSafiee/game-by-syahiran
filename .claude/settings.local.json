@@ -19,7 +19,10 @@
       "Bash(\"./build/windows/x64/runner/Debug/game_by_syahiran.exe\")",
       "Read(//tmp/**)",
       "Bash(flutter build *)",
-      "PowerShell(Stop-Process -Id 23424 -Force -ErrorAction SilentlyContinue)"
+      "PowerShell(Stop-Process -Id 23424 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Id 16832 -Force -ErrorAction SilentlyContinue)",
+      "Bash(mkdir -p assets/sprites/items lib/config/items lib/config/quests lib/game/inventory lib/game/quest)",
+      "PowerShell(Stop-Process -Id 27456 -Force -ErrorAction SilentlyContinue)"
     ]
   }
 }

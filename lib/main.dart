@@ -2,7 +2,12 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'config/controls_config.dart';
+import 'game/dialogue/dialogue_view_state.dart';
+import 'game/menu_screen.dart';
 import 'game/rpg_game.dart';
+import 'widgets/dialogue_box.dart';
+import 'widgets/menu_overlay.dart';
 import 'widgets/virtual_controller_overlay.dart';
 
 void main() {
@@ -56,18 +61,46 @@ class _GameScreenState extends State<GameScreen> {
       body: Stack(
         children: [
           Positioned.fill(child: GameWidget(game: _game)),
-          Positioned.fill(
-            child: VirtualControllerOverlay(
-              onDirectionPressed: _game.onDirectionPressed,
-              onDirectionReleased: _game.onDirectionReleased,
-              onAction: _game.onAction,
-            ),
+          ValueListenableBuilder<DialogueViewState?>(
+            valueListenable: _game.dialogue,
+            builder: (context, dialogueState, _) {
+              return ValueListenableBuilder<MenuScreen>(
+                valueListenable: _game.menuScreen,
+                builder: (context, menuScreenState, _) {
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: VirtualControllerOverlay(
+                          onDirectionPressed: _game.onDirectionPressed,
+                          onDirectionReleased: _game.onDirectionReleased,
+                          onAction: _game.onAction,
+                          isMovementBlocked: dialogueState != null || menuScreenState != MenuScreen.closed,
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: MenuOverlay(
+                          screen: menuScreenState,
+                          inventory: _game.inventory,
+                          quests: _game.quests,
+                          onOpenInventory: _game.openInventoryScreen,
+                          onOpenQuests: _game.openQuestsScreen,
+                          onClose: _game.closeMenu,
+                          onBack: () => _game.onAction(ControllerAction.cancel),
+                        ),
+                      ),
+                      if (dialogueState != null)
+                        Positioned.fill(child: DialogueBox(state: dialogueState)),
+                      // --- Phase 4 hook point ---------------------------------
+                      // An affection-stat indicator would get its own layer
+                      // here, driven by a new ValueNotifier on RpgGame
+                      // alongside `dialogue`/`menuScreen`.
+                      // ---------------------------------------------------------
+                    ],
+                  );
+                },
+              );
+            },
           ),
-          // --- Phase 2 hook point -----------------------------------------
-          // A dialogue box / NPC name banner widget would be layered here,
-          // above the controller overlay, driven by RpgGame.onAction's
-          // ControllerAction.interact branch.
-          // ------------------------------------------------------------------
         ],
       ),
     );

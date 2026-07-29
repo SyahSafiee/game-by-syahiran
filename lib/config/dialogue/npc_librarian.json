@@ -1,0 +1,17 @@
+{
+  "id": "npc_librarian",
+  "name": "Librarian",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Welcome to the library.",
+    "We've got thousands of books here, but please keep your voice down.",
+    "Here, take this book back to the dorm keeper for me, would you?"
+  ],
+  "givesItem": "old_library_key",
+  "givesItemQuantity": 1,
+  "startsQuest": "quest_return_the_book",
+  "completesObjective": {
+    "questId": "quest_return_the_book",
+    "objective": "Talk to the librarian"
+  }
+}

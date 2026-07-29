@@ -16,11 +16,18 @@ class VirtualControllerOverlay extends StatelessWidget {
     required this.onDirectionPressed,
     required this.onDirectionReleased,
     required this.onAction,
+    this.isMovementBlocked = false,
   });
 
   final DirectionCallback onDirectionPressed;
   final DirectionStopCallback onDirectionReleased;
   final ActionCallback onAction;
+
+  /// True while dialogue or any pause-menu screen (inventory/quests/main)
+  /// is open. Movement is frozen game-side regardless; this just dims and
+  /// disables the D-pad so it doesn't visually compete with whatever's
+  /// open. A/B/Menu stay live so the player can still advance/close/back out.
+  final bool isMovementBlocked;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +39,14 @@ class VirtualControllerOverlay extends StatelessWidget {
             Positioned(
               left: 0,
               bottom: 0,
-              child: _DPad(onPressed: onDirectionPressed, onReleased: onDirectionReleased),
+              child: IgnorePointer(
+                ignoring: isMovementBlocked,
+                child: AnimatedOpacity(
+                  opacity: isMovementBlocked ? 0.25 : 1,
+                  duration: const Duration(milliseconds: 150),
+                  child: _DPad(onPressed: onDirectionPressed, onReleased: onDirectionReleased),
+                ),
+              ),
             ),
             Positioned(
               right: 0,

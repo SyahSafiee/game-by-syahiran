@@ -94,6 +94,14 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
       return;
     }
 
+    // Dialogue and pause-menu screens (inventory/quests/main) all freeze
+    // movement so the player can't wander off mid-conversation or while
+    // browsing a menu. heldDirection is intentionally left as-is (not
+    // cleared) so releasing/re-pressing isn't required once the UI closes.
+    if (game.isUiBlockingInput) {
+      return;
+    }
+
     final direction = heldDirection;
     if (direction != null) {
       _tryStartMove(direction);
@@ -103,7 +111,7 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
   void _tryStartMove(GameDirection direction) {
     facingDirection = direction;
 
-    final targetGridPosition = gridPosition + _directionVector(direction);
+    final targetGridPosition = gridPosition + direction.gridDelta;
     if (game.isTileBlocked(targetGridPosition)) {
       // Bumped into a wall/edge: face the direction but don't move,
       // matching the classic GBA "bump" feel.
@@ -128,16 +136,8 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
     };
   }
 
-  Vector2 _directionVector(GameDirection direction) => switch (direction) {
-    GameDirection.up => Vector2(0, -1),
-    GameDirection.down => Vector2(0, 1),
-    GameDirection.left => Vector2(-1, 0),
-    GameDirection.right => Vector2(1, 0),
-  };
-
-  // --- Phase 2 hook point -------------------------------------------------
-  // When NPC/dialogue triggers land, this is where an "interact" call would
-  // check the tile directly in front of the player (gridPosition +
-  // _directionVector(facingDirection)) for an NPC/sign/object to talk to.
-  // -------------------------------------------------------------------------
+  /// The grid tile directly in front of the player, based on
+  /// [facingDirection]. This is what [RpgGame] checks for an NPC when the
+  /// player presses the interact button.
+  Vector2 get facingGridPosition => gridPosition + facingDirection.gridDelta;
 }

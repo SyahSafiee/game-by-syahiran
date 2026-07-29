@@ -1,0 +1,14 @@
+{
+  "quests": [
+    {
+      "id": "quest_return_the_book",
+      "title": "Return the Book",
+      "description": "The librarian lent you a book. Bring it to the dorm keeper before curfew.",
+      "objectives": [
+        "Talk to the librarian",
+        "Deliver the book to the dorm keeper"
+      ],
+      "completed": false
+    }
+  ]
+}

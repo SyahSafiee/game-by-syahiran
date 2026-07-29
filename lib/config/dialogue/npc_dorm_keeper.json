@@ -1,0 +1,14 @@
+{
+  "id": "npc_dorm_keeper",
+  "name": "Dorm Keeper",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Hey there! Just doing my rounds through the dorms.",
+    "Oh, is that the library's key? Thanks for bringing it by.",
+    "Curfew's at midnight, so don't stay out too late."
+  ],
+  "completesObjective": {
+    "questId": "quest_return_the_book",
+    "objective": "Deliver the book to the dorm keeper"
+  }
+}

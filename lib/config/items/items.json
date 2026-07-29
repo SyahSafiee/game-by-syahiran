@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "id": "old_library_key",
+      "name": "Old Library Key",
+      "description": "A tarnished brass key. Smells like dusty paper.",
+      "icon": "assets/sprites/items/old_library_key.png",
+      "stackable": false
+    },
+    {
+      "id": "student_id_card",
+      "name": "Student ID Card",
+      "description": "Your campus ID. You'll probably need it for a lot of things.",
+      "icon": "assets/sprites/items/student_id_card.png",
+      "stackable": false
+    }
+  ]
+}
