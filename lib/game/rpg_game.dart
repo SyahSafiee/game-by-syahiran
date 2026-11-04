@@ -118,41 +118,20 @@ class RpgGame extends FlameGame {
   }
 
   /// Called by [PlayerComponent] each time a tile-to-tile glide finishes.
-  /// Walking onto a door tile (front doors from the front, back doors from
-  /// behind - the surrounding walls allow no other approach) enters that
-  /// building; an interior's exit mat or back door leaves it.
+  /// Walking onto a door tile (only possible from the front) enters that
+  /// building; walking onto an interior's exit mat leaves it.
   void onPlayerArrived(Vector2 gridPosition) {
     if (_changingMap) {
       return;
     }
     if (_currentDoor == null && level.isWarpTile(gridPosition)) {
-      final x = gridPosition.x.round();
-      final y = gridPosition.y.round();
-      final front = Doors.atTile(x, y);
-      final back = Doors.atBackTile(x, y);
-      if (front != null) {
+      final door = Doors.atTile(gridPosition.x.round(), gridPosition.y.round());
+      if (door != null) {
         _changeMap(
-          mapPath: front.interiorMap,
-          spawn: front.interiorSpawnVector,
+          mapPath: door.interiorMap,
+          spawn: door.interiorSpawnVector,
           facing: DoorConfig.enterFacing,
-          door: front,
-        );
-      } else if (back != null) {
-        _changeMap(
-          mapPath: back.interiorMap,
-          spawn: back.backInteriorSpawnVector,
-          facing: DoorConfig.backEnterFacing,
-          door: back,
-        );
-      }
-    } else if (_currentDoor != null && level.isBackExitTile(gridPosition)) {
-      final door = _currentDoor!;
-      if (door.backDoorTile != null) {
-        _changeMap(
-          mapPath: GameConfig.degreeCampusMapPath,
-          spawn: door.backOutdoorSpawn,
-          facing: DoorConfig.backExitFacing,
-          door: null,
+          door: door,
         );
       }
     } else if (_currentDoor != null && level.isExitTile(gridPosition)) {
