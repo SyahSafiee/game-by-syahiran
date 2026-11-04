@@ -36,8 +36,13 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
   /// Read every frame so movement repeats smoothly while the button is held.
   GameDirection? heldDirection;
 
+  /// True while the B button is held; shortens the tile glide (see
+  /// [GameConfig.sprintTileMoveDuration]) and skips the auto-repeat delay.
+  bool isSprinting = false;
+
   bool _isMoving = false;
   double _moveElapsed = 0;
+  double _moveDuration = GameConfig.tileMoveDuration;
   late Vector2 _moveFrom;
   late Vector2 _moveTo;
 
@@ -91,7 +96,7 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
 
     if (_isMoving) {
       _moveElapsed += dt;
-      final t = (_moveElapsed / GameConfig.tileMoveDuration).clamp(0.0, 1.0);
+      final t = (_moveElapsed / _moveDuration).clamp(0.0, 1.0);
       position = Vector2(
         _moveFrom.x + (_moveTo.x - _moveFrom.x) * t,
         _moveFrom.y + (_moveTo.y - _moveFrom.y) * t,
@@ -132,7 +137,7 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
     // glide once the repeat-delay buffer has passed, so a normal tap (which
     // easily outlasts one glide) never produces a second, unintended tile.
     _heldElapsed += dt;
-    if (_heldElapsed >= GameConfig.moveRepeatDelay) {
+    if (isSprinting || _heldElapsed >= GameConfig.moveRepeatDelay) {
       _tryStartMove(direction);
       _heldElapsed = 0;
     }
@@ -151,6 +156,7 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
 
     _isMoving = true;
     _moveElapsed = 0;
+    _moveDuration = isSprinting ? GameConfig.sprintTileMoveDuration : GameConfig.tileMoveDuration;
     _moveFrom = gridPosition * GameConfig.displayTileSize;
     _moveTo = targetGridPosition * GameConfig.displayTileSize;
     gridPosition = targetGridPosition;

@@ -16,12 +16,16 @@ class VirtualControllerOverlay extends StatelessWidget {
     required this.onDirectionPressed,
     required this.onDirectionReleased,
     required this.onAction,
+    this.onSprintChanged,
     this.isMovementBlocked = false,
   });
 
   final DirectionCallback onDirectionPressed;
   final DirectionStopCallback onDirectionReleased;
   final ActionCallback onAction;
+
+  /// Reports B pressed (true) / released (false) so holding it can sprint.
+  final void Function(bool sprinting)? onSprintChanged;
 
   /// True while dialogue or any pause-menu screen (inventory/quests/main)
   /// is open. Movement is frozen game-side regardless; this just dims and
@@ -51,7 +55,7 @@ class VirtualControllerOverlay extends StatelessWidget {
             Positioned(
               right: 0,
               bottom: 0,
-              child: _ActionButtonCluster(onAction: onAction),
+              child: _ActionButtonCluster(onAction: onAction, onSprintChanged: onSprintChanged),
             ),
             Positioned(
               bottom: 0,
@@ -170,9 +174,10 @@ class _DPadButton extends StatelessWidget {
 }
 
 class _ActionButtonCluster extends StatelessWidget {
-  const _ActionButtonCluster({required this.onAction});
+  const _ActionButtonCluster({required this.onAction, this.onSprintChanged});
 
   final ActionCallback onAction;
+  final void Function(bool sprinting)? onSprintChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +200,7 @@ class _ActionButtonCluster extends StatelessWidget {
             child: _RoundButton(
               label: 'B',
               onTap: () => onAction(ControllerAction.cancel),
+              onHoldChanged: onSprintChanged,
             ),
           ),
         ],
@@ -204,15 +210,19 @@ class _ActionButtonCluster extends StatelessWidget {
 }
 
 class _RoundButton extends StatelessWidget {
-  const _RoundButton({required this.label, required this.onTap});
+  const _RoundButton({required this.label, required this.onTap, this.onHoldChanged});
 
   final String label;
   final VoidCallback onTap;
+  final void Function(bool held)? onHoldChanged;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onTapDown: (_) => onHoldChanged?.call(true),
+      onTapUp: (_) => onHoldChanged?.call(false),
+      onTapCancel: () => onHoldChanged?.call(false),
       child: Container(
         width: 56,
         height: 56,
