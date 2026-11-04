@@ -118,6 +118,8 @@ class RpgGame extends FlameGame {
 
   void onDirectionReleased() => _inputManager.onDirectionReleased();
 
+  void onSprintChanged({required bool sprinting}) => _inputManager.onSprintChanged(sprinting: sprinting);
+
   void onAction(ControllerAction action) => _inputManager.onAction(action);
 
   // --- Pause menu / inventory / quests -----------------------------------

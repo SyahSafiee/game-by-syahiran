@@ -33,6 +33,10 @@ class GameConfig {
   /// Lower = snappier (Fire Red is quite fast, ~0.13-0.16s).
   static const double tileMoveDuration = 0.15;
 
+  /// Seconds per tile while the player holds the B button (sprint).
+  /// Roughly 1.9x faster than walking.
+  static const double sprintTileMoveDuration = 0.08;
+
   /// Grace period, after the first tile of a press, before movement starts
   /// auto-repeating. Without this, any tap held even slightly longer than
   /// [tileMoveDuration] (which is most real touch taps - they easily last

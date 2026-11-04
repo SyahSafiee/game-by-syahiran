@@ -153,6 +153,7 @@ class _GameScreenState extends State<GameScreen> {
                           onDirectionPressed: game.onDirectionPressed,
                           onDirectionReleased: game.onDirectionReleased,
                           onAction: game.onAction,
+                          onSprintChanged: (sprinting) => game.onSprintChanged(sprinting: sprinting),
                           isMovementBlocked: dialogueState != null || menuScreenState != MenuScreen.closed,
                         ),
                       ),

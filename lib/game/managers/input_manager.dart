@@ -32,6 +32,12 @@ class InputManager {
     player.heldDirection = direction;
   }
 
+  /// Hold-to-run: the B button's press/release state. Ignored (and cleared)
+  /// while UI is open so sprint can't stick on after a menu opens mid-hold.
+  void onSprintChanged({required bool sprinting}) {
+    player.isSprinting = sprinting;
+  }
+
   void onDirectionReleased() {
     player.heldDirection = null;
   }
