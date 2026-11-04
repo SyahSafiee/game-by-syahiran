@@ -212,26 +212,37 @@ def window_tile(b):
 
 
 def door_tile(b):
+    """Rectangular stone door frame with an awning, glass-panel door and a
+    step - the entrance of a building, facing the walkway in front."""
     t = wall_tile(b)
-    door = rgb('#6b4a2c')
-    dd = rgb('#4a3220')
-    dl = rgb('#8a6440')
-    t.rect(3, 1, 12, 15, b.trim)
-    t.rect(4, 2, 11, 15, door)
-    for y in range(2, 16):
-        t.p(7, y, dd)
-        t.p(8, y, dd)
-        t.p(4, y, dl)
-    t.rect(5, 3, 6, 7, dl)
-    t.rect(9, 3, 10, 7, dl)
-    t.rect(5, 9, 6, 13, dl)
-    t.rect(9, 9, 10, 13, dl)
-    t.p(6, 10, dd)
-    t.p(9, 10, dd)
-    # knob + doorstep
-    t.p(10, 9, rgb('#f0c84a'))
-    t.p(10, 10, rgb('#b8902a'))
-    t.rect(2, 15, 13, 15, rgb('#bdb8b0'))
+    stone, stone_l, stone_d = rgb('#b9b5ad'), rgb('#dcd8d0'), rgb('#8c8880')
+    wood, wood_d, wood_l = rgb('#7a5230'), rgb('#4f341d'), rgb('#9a6c42')
+    # awning over the door (building colour)
+    t.rect(1, 0, 14, 2, b.roof)
+    t.rect(1, 2, 14, 2, b.roof_d)
+    t.rect(1, 0, 14, 0, b.roof_l)
+    # stone frame
+    t.rect(2, 3, 13, 15, stone)
+    t.rect(2, 3, 13, 3, stone_l)
+    t.rect(13, 3, 13, 15, stone_d)
+    # recessed doorway
+    t.rect(4, 4, 11, 14, rgb('#2a2432'))
+    # double door: glass upper half, wooden lower half
+    t.rect(4, 4, 11, 14, wood)
+    t.rect(4, 4, 4, 14, wood_l)
+    t.rect(7, 4, 8, 14, wood_d)
+    for x0 in (5, 9):
+        t.rect(x0, 5, x0 + 1, 8, b.glass)
+        t.p(x0, 5, b.glass_l)
+        t.rect(x0, 9, x0 + 1, 9, wood_d)
+        t.rect(x0, 11, x0 + 1, 13, wood_l)
+    t.p(6, 11, wood_d)
+    t.p(9, 11, wood_d)
+    t.p(7, 10, rgb('#f0c84a'))
+    t.p(8, 10, rgb('#f0c84a'))
+    # step
+    t.rect(1, 15, 14, 15, rgb('#cfcbc3'))
+    t.rect(1, 15, 14, 15, rgb('#cfcbc3'))
     return t
 
 
