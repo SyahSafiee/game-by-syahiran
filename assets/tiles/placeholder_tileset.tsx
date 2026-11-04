@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.0" name="placeholder_tileset" tilewidth="16" tileheight="16" tilecount="20" columns="20">
- <image source="placeholder_tileset.png" width="320" height="16"/>
+<tileset version="1.10" tiledversion="1.11.0" name="placeholder_tileset" tilewidth="16" tileheight="16" tilecount="28" columns="28">
+ <image source="placeholder_tileset.png" width="448" height="16"/>
  <tile id="0">
   <!-- grass: walkable -->
   <properties>
@@ -124,6 +124,54 @@
   <!-- academic club room: door -->
   <properties>
    <property name="collidable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="20">
+  <!-- tufted grass: walkable -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="21">
+  <!-- pink flowers: walkable -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="22">
+  <!-- yellow flowers: walkable -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="23">
+  <!-- bush: blocking -->
+  <properties>
+   <property name="collidable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="24">
+  <!-- bench: blocking -->
+  <properties>
+   <property name="collidable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="25">
+  <!-- lamp post: blocking -->
+  <properties>
+   <property name="collidable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="26">
+  <!-- signboard: blocking -->
+  <properties>
+   <property name="collidable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="27">
+  <!-- cobblestone: walkable -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
   </properties>
  </tile>
 </tileset>
