@@ -15,10 +15,12 @@ import '../../config/game_config.dart';
 /// truth for "can the player step here", whether the reason is terrain or
 /// an NPC standing there.
 class Level {
-  late final TiledComponent map;
+  late TiledComponent map;
 
   /// `true` at `x,y` (grid coordinates) if that tile blocks movement.
   final Map<String, bool> _collisionByTile = {};
+  final Set<String> _warpTiles = {};
+  final Set<String> _exitTiles = {};
   late int _mapWidthInTiles;
   late int _mapHeightInTiles;
 
@@ -31,9 +33,9 @@ class Level {
   /// Loads the Degree-chapter campus map and builds the collision lookup
   /// from its `Ground` layer. Must be awaited before [isTileBlocked] or
   /// [blockTile] are used, and before [map] is added to the world.
-  Future<void> load() async {
+  Future<void> load([String mapPath = GameConfig.degreeCampusMapPath]) async {
     map = await TiledComponent.load(
-      GameConfig.degreeCampusMapPath,
+      mapPath,
       Vector2.all(GameConfig.displayTileSize),
       // flame_tiled resolves the tileset image relative to this same
       // prefix, so it must match where the .tmx/.tsx/.png actually live -
@@ -52,6 +54,9 @@ class Level {
   }
 
   void _buildCollisionMap() {
+    _collisionByTile.clear();
+    _warpTiles.clear();
+    _exitTiles.clear();
     final tiledMap = map.tileMap.map;
     _mapWidthInTiles = tiledMap.width;
     _mapHeightInTiles = tiledMap.height;
@@ -66,11 +71,26 @@ class Level {
         if (collidable) {
           _collisionByTile[_gridKey(x, y)] = true;
         }
+        final properties = tiledMap.tileByGid(gid)?.properties;
+        if (properties?.getValue<bool>('warp') ?? false) {
+          _warpTiles.add(_gridKey(x, y));
+        }
+        if (properties?.getValue<bool>('exit') ?? false) {
+          _exitTiles.add(_gridKey(x, y));
+        }
       }
     }
   }
 
   String _gridKey(int x, int y) => '$x,$y';
+
+  /// True if [gridPosition] is a building door (`warp` tile property).
+  bool isWarpTile(Vector2 gridPosition) =>
+      _warpTiles.contains(_gridKey(gridPosition.x.round(), gridPosition.y.round()));
+
+  /// True if [gridPosition] is an interior exit mat (`exit` tile property).
+  bool isExitTile(Vector2 gridPosition) =>
+      _exitTiles.contains(_gridKey(gridPosition.x.round(), gridPosition.y.round()));
 
   /// Flags the given grid tile as blocked - used by `NpcManager` so a
   /// spawned NPC occupies its tile exactly like a wall.

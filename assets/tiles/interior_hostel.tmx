@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="10" height="9" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="placeholder_tileset.tsx"/>
+ <layer id="1" name="Ground" width="10" height="9">
+  <data encoding="csv">
+39,39,39,39,39,39,39,39,39,39,
+39,30,30,32,30,30,32,30,30,39,
+39,34,34,29,33,33,29,34,34,39,
+39,29,29,29,29,29,29,29,29,39,
+39,34,29,29,38,38,29,29,34,39,
+39,29,29,29,29,29,29,29,29,39,
+39,36,29,29,29,29,29,29,36,39,
+39,30,30,30,30,31,30,30,30,39,
+39,39,39,39,39,39,39,39,39,39
+</data>
+ </layer>
+</map>

@@ -105,6 +105,7 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
         _isMoving = false;
         position = _moveTo;
         _updateAnimation(moving: false);
+        game.onPlayerArrived(gridPosition);
       }
       return;
     }
@@ -141,6 +142,19 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
       _tryStartMove(direction);
       _heldElapsed = 0;
     }
+  }
+
+  /// Instantly places the player on [grid] facing [direction] - used for
+  /// map changes (entering/leaving a building). Cancels any glide in
+  /// progress and requires the next press to be a fresh one.
+  void teleportTo(Vector2 grid, GameDirection direction) {
+    gridPosition = grid.clone();
+    position = gridPosition * GameConfig.displayTileSize;
+    facingDirection = direction;
+    _isMoving = false;
+    _steppedDirection = null;
+    _heldElapsed = 0;
+    _updateAnimation(moving: false);
   }
 
   void _tryStartMove(GameDirection direction) {

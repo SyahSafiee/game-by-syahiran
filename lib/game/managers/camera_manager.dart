@@ -22,6 +22,15 @@ class CameraManager {
   }) {
     camera.viewfinder.zoom = GameConfig.cameraZoom;
     camera.follow(target, snap: true);
+    updateBounds(camera, mapWidthPx: mapWidthPx, mapHeightPx: mapHeightPx);
+  }
+
+  /// Re-clamps the camera to a new map size (used when changing maps).
+  static void updateBounds(
+    CameraComponent camera, {
+    required double mapWidthPx,
+    required double mapHeightPx,
+  }) {
     camera.setBounds(
       Rectangle.fromLTWH(0, 0, mapWidthPx, mapHeightPx),
       considerViewport: true,

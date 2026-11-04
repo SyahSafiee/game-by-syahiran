@@ -2,6 +2,8 @@ import 'package:flame/game.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 
 import '../config/controls_config.dart';
+import '../config/doors_config.dart';
+import '../config/game_config.dart';
 import 'components/player_component.dart';
 import 'dialogue/dialogue_view_state.dart';
 import 'inventory/inventory_model.dart';
@@ -73,7 +75,14 @@ class RpgGame extends FlameGame {
   /// True while any UI that should freeze player movement is open -
   /// dialogue, or a pause-menu screen. [PlayerComponent] checks this once
   /// per frame before accepting new movement input.
-  bool get isUiBlockingInput => isDialogueActive || menuManager.isOpen;
+  bool get isUiBlockingInput => isDialogueActive || menuManager.isOpen || _changingMap;
+
+  /// True while a building entrance/exit is swapping maps, so the player
+  /// can't move (or trigger a second warp) mid-load.
+  bool _changingMap = false;
+
+  /// The building the player is currently inside, or null outdoors.
+  DoorConfig? _currentDoor;
 
   @override
   Future<void> onLoad() async {
@@ -85,6 +94,7 @@ class RpgGame extends FlameGame {
     ]);
 
     await level.load();
+    level.map.priority = -1;
     world.add(level.map);
 
     npcManager.spawnAll(world, level);
@@ -105,6 +115,61 @@ class RpgGame extends FlameGame {
       mapWidthPx: level.mapWidthPx,
       mapHeightPx: level.mapHeightPx,
     );
+  }
+
+  /// Called by [PlayerComponent] each time a tile-to-tile glide finishes.
+  /// Walking onto a door tile (only possible from the front) enters that
+  /// building; walking onto an interior's exit mat leaves it.
+  void onPlayerArrived(Vector2 gridPosition) {
+    if (_changingMap) {
+      return;
+    }
+    if (_currentDoor == null && level.isWarpTile(gridPosition)) {
+      final door = Doors.atTile(gridPosition.x.round(), gridPosition.y.round());
+      if (door != null) {
+        _changeMap(
+          mapPath: door.interiorMap,
+          spawn: door.interiorSpawnVector,
+          facing: DoorConfig.enterFacing,
+          door: door,
+        );
+      }
+    } else if (_currentDoor != null && level.isExitTile(gridPosition)) {
+      final door = _currentDoor!;
+      _changeMap(
+        mapPath: GameConfig.degreeCampusMapPath,
+        spawn: door.outdoorExitSpawn,
+        facing: DoorConfig.exitFacing,
+        door: null,
+      );
+    }
+  }
+
+  Future<void> _changeMap({
+    required String mapPath,
+    required Vector2 spawn,
+    required GameDirection facing,
+    required DoorConfig? door,
+  }) async {
+    _changingMap = true;
+    world.remove(level.map);
+    npcManager.clear();
+    await level.load(mapPath);
+    level.map.priority = -1;
+    world.add(level.map);
+    if (door == null) {
+      // Back outdoors: the campus NPCs return to their posts.
+      npcManager.spawnAll(world, level);
+    }
+    _currentDoor = door;
+    player.teleportTo(spawn, facing);
+    CameraManager.updateBounds(
+      camera,
+      mapWidthPx: level.mapWidthPx,
+      mapHeightPx: level.mapHeightPx,
+    );
+    camera.viewfinder.position = player.position;
+    _changingMap = false;
   }
 
   /// Whether the given grid coordinate is out of bounds or blocked (terrain

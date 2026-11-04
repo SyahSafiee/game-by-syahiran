@@ -356,6 +356,141 @@ def stone_path():
     return t
 
 
+# ---------------------------------------------------------------- interiors
+WOOD, WOOD_D, WOOD_L = rgb('#c8935a'), rgb('#a87444'), rgb('#dcac76')
+
+
+def wood_floor():
+    t = Tile(WOOD)
+    for y in range(T):
+        for x in range(T):
+            if y % 4 == 3:
+                t.p(x, y, WOOD_D)
+            elif (x + (y // 4) * 5) % 16 == 0:
+                t.p(x, y, WOOD_D)
+            elif hsh(x, y, 21) % 13 == 0:
+                t.p(x, y, WOOD_L)
+    return t
+
+
+def inner_wall():
+    t = Tile(rgb('#e8dcc4'))
+    for y in range(T):
+        for x in range(T):
+            if y >= 11:
+                t.p(x, y, rgb('#8a6a4a'))      # wainscot
+            elif hsh(x, y, 22) % 17 == 0:
+                t.p(x, y, rgb('#d8ccb2'))
+    for x in range(T):
+        t.p(x, 11, rgb('#b08a60'))
+        t.p(x, 15, rgb('#6b4a2c'))
+        t.p(x, 0, rgb('#f4ecd8'))
+    return t
+
+
+def door_mat():
+    t = wood_floor()
+    t.rect(2, 3, 13, 12, rgb('#b8453f'))
+    t.rect(3, 4, 12, 11, rgb('#d8645a'))
+    for x in range(3, 13, 2):
+        t.p(x, 7, rgb('#f0d890'))
+        t.p(x, 8, rgb('#f0d890'))
+    return t
+
+
+def bookshelf():
+    t = inner_wall()
+    t.rect(0, 0, 15, 15, rgb('#6b4426'))
+    t.rect(1, 1, 14, 14, rgb('#4a2f1a'))
+    cols = [rgb('#c8453f'), rgb('#3f6fb0'), rgb('#e8b84a'), rgb('#4f9a5a'), rgb('#8a4fb0'), rgb('#e8e0cc')]
+    for shelf_y in (1, 6, 11):
+        for x in range(1, 14):
+            h = 3 + hsh(x, shelf_y, 23) % 2
+            c = cols[hsh(x, shelf_y, 24) % len(cols)]
+            for y in range(shelf_y + 4 - h, shelf_y + 4):
+                t.p(x, y, c)
+            t.p(x, shelf_y + 4 - h, tuple(min(255, v + 40) for v in c[:3]) + (255,))
+        t.rect(1, shelf_y + 4, 14, shelf_y + 4, rgb('#6b4426'))
+    return t
+
+
+def table():
+    t = wood_floor()
+    top, tl, td = rgb('#a8703c'), rgb('#c8905a'), rgb('#6b4426')
+    t.rect(1, 3, 14, 11, top)
+    t.rect(1, 3, 14, 3, tl)
+    t.rect(1, 11, 14, 12, td)
+    t.rect(2, 13, 3, 14, td)
+    t.rect(12, 13, 13, 14, td)
+    # a book and a mug
+    t.rect(3, 5, 7, 8, rgb('#3f6fb0'))
+    t.rect(3, 5, 7, 5, rgb('#8cb4e8'))
+    t.rect(10, 6, 12, 8, rgb('#f4efe4'))
+    t.p(13, 7, rgb('#f4efe4'))
+    return t
+
+
+def bed():
+    t = wood_floor()
+    t.rect(2, 1, 13, 14, rgb('#6b4426'))
+    t.rect(3, 2, 12, 13, rgb('#f4efe4'))
+    t.rect(4, 3, 11, 6, rgb('#fff8ec'))
+    t.rect(3, 7, 12, 13, rgb('#4f7ab8'))
+    t.rect(3, 7, 12, 8, rgb('#7aa4d8'))
+    for x in range(3, 13):
+        t.p(x, 13, rgb('#34588a'))
+    return t
+
+
+def counter():
+    t = wood_floor()
+    t.rect(0, 2, 15, 13, rgb('#8a5a30'))
+    t.rect(0, 2, 15, 5, rgb('#e8dcc4'))
+    t.rect(0, 2, 15, 2, rgb('#fff8ec'))
+    t.rect(0, 6, 15, 6, rgb('#5a3a1e'))
+    for x in range(2, 15, 4):
+        t.rect(x, 8, x + 2, 12, rgb('#a8703c'))
+    t.rect(4, 0, 6, 2, rgb('#e8b84a'))   # something on the counter
+    t.rect(10, 1, 11, 2, rgb('#c8453f'))
+    return t
+
+
+def plant():
+    t = wood_floor()
+    t.rect(4, 10, 11, 14, rgb('#b8603a'))
+    t.rect(4, 10, 11, 10, rgb('#d8805a'))
+    t.rect(5, 14, 10, 14, rgb('#8a4a2a'))
+    for (x, y, w) in [(7, 1, 2), (5, 2, 6), (4, 4, 8), (3, 6, 10), (5, 8, 6)]:
+        t.rect(x, y, x + w - 1, y, rgb('#3d9444'))
+        t.rect(x, y + 1, x + w - 1, y + 1, rgb('#4faa4a'))
+    t.rect(7, 9, 8, 9, rgb('#25602f'))
+    return t
+
+
+def chalkboard():
+    t = inner_wall()
+    t.rect(0, 1, 15, 11, rgb('#6b4426'))
+    t.rect(1, 2, 14, 10, rgb('#2f4a3a'))
+    for (x, y, w) in [(3, 4, 7), (3, 6, 5), (3, 8, 8)]:
+        t.rect(x, y, x + w - 1, y, rgb('#e8e8dc'))
+    t.rect(1, 11, 14, 11, rgb('#a87440'))
+    t.rect(9, 11, 11, 11, rgb('#f4efe4'))
+    return t
+
+
+def rug():
+    t = wood_floor()
+    t.rect(0, 2, 15, 13, rgb('#3f6fb0'))
+    t.rect(1, 3, 14, 12, rgb('#5a8ad0'))
+    t.rect(3, 5, 12, 10, rgb('#e8d8a0'))
+    t.rect(4, 6, 11, 9, rgb('#5a8ad0'))
+    return t
+
+
+def void():
+    return Tile(rgb('#1c1626'))
+
+
 def build():
     tiles = [
         grass(0),            # 0
@@ -374,6 +509,17 @@ def build():
         lamp(),                                   # 25 lamp post (blocking)
         sign(),                                   # 26 signboard (blocking)
         stone_path(),                             # 27 cobblestone (walkable)
+        wood_floor(),                             # 28 interior floor (walkable)
+        inner_wall(),                             # 29 interior wall (blocking)
+        door_mat(),                               # 30 exit mat (walkable, exit)
+        bookshelf(),                              # 31 bookshelf (blocking)
+        table(),                                  # 32 table (blocking)
+        bed(),                                    # 33 bed (blocking)
+        counter(),                                # 34 counter (blocking)
+        plant(),                                  # 35 plant (blocking)
+        chalkboard(),                             # 36 chalkboard (blocking)
+        rug(),                                    # 37 rug (walkable)
+        void(),                                   # 38 outside the room (blocking)
     ]
     sheet = Image.new('RGBA', (T * len(tiles), T), (0, 0, 0, 0))
     for i, t in enumerate(tiles):
