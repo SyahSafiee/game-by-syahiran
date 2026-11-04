@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter/foundation.dart' show ValueNotifier;
 
 import '../dialogue/dialogue_data.dart';
@@ -6,6 +8,7 @@ import '../inventory/inventory_model.dart';
 import '../quest/quest_data.dart';
 import '../quest/quest_model.dart';
 import '../relationship/affection_model.dart';
+import '../save/save_service.dart';
 
 /// Owns the active-conversation state machine: which dialogue is open, which
 /// line it's on, and applying a dialogue's item/quest/affection effects once
@@ -121,5 +124,13 @@ class DialogueManager {
     if (affectionDelta != null && affectionDelta != 0) {
       affection.addAffection(data.id, affectionDelta, displayName: data.name);
     }
+
+    // Fire-and-forget: a conversation closing is exactly the moments
+    // inventory/quest/affection state can change, so autosave here rather
+    // than on a timer. `unawaited` because nothing needs to block on a local
+    // SharedPreferences write finishing.
+    unawaited(
+      GameSaveService.save(playerName: playerName, inventory: inventory, quests: quests, affection: affection),
+    );
   }
 }

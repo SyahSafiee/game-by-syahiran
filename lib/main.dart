@@ -6,6 +6,7 @@ import 'config/controls_config.dart';
 import 'game/dialogue/dialogue_view_state.dart';
 import 'game/menu_screen.dart';
 import 'game/rpg_game.dart';
+import 'game/save/save_service.dart';
 import 'widgets/dialogue_box.dart';
 import 'widgets/menu_overlay.dart';
 import 'widgets/name_entry_screen.dart';
@@ -47,18 +48,88 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  /// Null until the name-entry screen has been confirmed, at which point the
-  /// game itself is created with that name baked in (see [RpgGame.playerName]).
+  /// Null while [_checkingSave] is true (still awaiting the startup save
+  /// check) or once the name-entry screen is showing; set once a game has
+  /// started, either resumed from a save or fresh (see
+  /// [RpgGame.playerName]).
   RpgGame? _game;
 
-  void _startGame(String playerName) {
+  /// True only during the brief async [GameSaveService.load] check on
+  /// startup, so the very first frame doesn't flash the name-entry screen
+  /// before we know whether there's a save to resume instead.
+  bool _checkingSave = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSaveIfAny();
+  }
+
+  Future<void> _loadSaveIfAny() async {
+    final save = await GameSaveService.load();
+    if (!mounted) {
+      return;
+    }
+    if (save == null) {
+      setState(() => _checkingSave = false);
+      return;
+    }
+    final game = RpgGame(playerName: save.playerName);
+    game.inventory.loadFromJson(save.inventoryJson);
+    game.quests.loadFromJson(save.questsJson);
+    game.affection.loadFromJson(save.affectionJson);
     setState(() {
-      _game = RpgGame(playerName: playerName);
+      _game = game;
+      _checkingSave = false;
     });
+  }
+
+  void _startGame(String playerName) {
+    final game = RpgGame(playerName: playerName);
+    // Persist immediately so progress/name survive even if the player
+    // closes the app before ever finishing a conversation (the other save
+    // point - see DialogueManager._applyEffects).
+    GameSaveService.save(
+      playerName: playerName,
+      inventory: game.inventory,
+      quests: game.quests,
+      affection: game.affection,
+    );
+    setState(() => _game = game);
+  }
+
+  Future<void> _confirmNewGame() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: const Text('Start a new game?', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          "This erases your current name, inventory, quests, and relationships. This can't be undone.",
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Start new game', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) {
+      return;
+    }
+    await GameSaveService.clear();
+    setState(() => _game = null);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_checkingSave) {
+      return const Scaffold(backgroundColor: Colors.black);
+    }
+
     final game = _game;
     if (game == null) {
       return NameEntryScreen(onStart: _startGame);
@@ -94,6 +165,7 @@ class _GameScreenState extends State<GameScreen> {
                           onOpenInventory: game.openInventoryScreen,
                           onOpenQuests: game.openQuestsScreen,
                           onOpenRelationships: game.openRelationshipsScreen,
+                          onNewGame: _confirmNewGame,
                           onClose: game.closeMenu,
                           onBack: () => game.onAction(ControllerAction.cancel),
                         ),

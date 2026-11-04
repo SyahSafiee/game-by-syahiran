@@ -24,6 +24,7 @@ class MenuOverlay extends StatelessWidget {
     required this.onOpenInventory,
     required this.onOpenQuests,
     required this.onOpenRelationships,
+    required this.onNewGame,
     required this.onClose,
     required this.onBack,
   });
@@ -35,6 +36,11 @@ class MenuOverlay extends StatelessWidget {
   final VoidCallback onOpenInventory;
   final VoidCallback onOpenQuests;
   final VoidCallback onOpenRelationships;
+
+  /// Wipes the save and returns to the name-entry screen. Lives on
+  /// [GameScreen] in `main.dart` (not [RpgGame]) since it has to tear down
+  /// and replace the whole game instance, not just change in-game state.
+  final VoidCallback onNewGame;
   final VoidCallback onClose;
   final VoidCallback onBack;
 
@@ -65,6 +71,7 @@ class MenuOverlay extends StatelessWidget {
                   onOpenInventory: onOpenInventory,
                   onOpenQuests: onOpenQuests,
                   onOpenRelationships: onOpenRelationships,
+                  onNewGame: onNewGame,
                   onClose: onClose,
                 ),
                 MenuScreen.inventory => _InventoryPanel(inventory: inventory, onBack: onBack),
@@ -111,12 +118,14 @@ class _MainMenuPanel extends StatelessWidget {
     required this.onOpenInventory,
     required this.onOpenQuests,
     required this.onOpenRelationships,
+    required this.onNewGame,
     required this.onClose,
   });
 
   final VoidCallback onOpenInventory;
   final VoidCallback onOpenQuests;
   final VoidCallback onOpenRelationships;
+  final VoidCallback onNewGame;
   final VoidCallback onClose;
 
   @override
@@ -133,6 +142,8 @@ class _MainMenuPanel extends StatelessWidget {
         const SizedBox(height: 8),
         _MenuOptionButton(label: 'Relationships', onTap: onOpenRelationships),
         const SizedBox(height: 8),
+        _MenuOptionButton(label: 'New Game', onTap: onNewGame, isDestructive: true),
+        const SizedBox(height: 8),
         _MenuOptionButton(label: 'Close', onTap: onClose),
       ],
     );
@@ -140,22 +151,29 @@ class _MainMenuPanel extends StatelessWidget {
 }
 
 class _MenuOptionButton extends StatelessWidget {
-  const _MenuOptionButton({required this.label, required this.onTap});
+  const _MenuOptionButton({required this.label, required this.onTap, this.isDestructive = false});
 
   final String label;
   final VoidCallback onTap;
 
+  /// Tints the button red, for options like "New Game" that discard
+  /// progress - a visual warning, not a substitute for its own confirmation.
+  final bool isDestructive;
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.08),
+      color: isDestructive ? Colors.red.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 15)),
+          child: Text(
+            label,
+            style: TextStyle(color: isDestructive ? Colors.redAccent : Colors.white, fontSize: 15),
+          ),
         ),
       ),
     );
