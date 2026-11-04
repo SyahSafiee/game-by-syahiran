@@ -24,9 +24,10 @@ class NpcManager {
     ('npc_dorm_keeper', 18, 7),
     ('npc_john', 15, 7),
     ('npc_hariz', 19, 7),
-    // North lawn, above the lecture hall
+    // North lawn, behind the lecture hall (Intan sits beside its back door;
+    // the tile directly behind the door, (5, 1), stays free)
     ('npc_intan', 3, 1),
-    ('npc_aleeya', 7, 1),
+    ('npc_aleeya', 12, 2),
     // Beside the club room door (row 14, west block); the tile directly in
     // front of the door stays free so the player can walk in
     ('npc_azib', 4, 14),

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.0" name="placeholder_tileset" tilewidth="16" tileheight="16" tilecount="39" columns="39">
- <image source="placeholder_tileset.png" width="624" height="16"/>
+<tileset version="1.10" tiledversion="1.11.0" name="placeholder_tileset" tilewidth="16" tileheight="16" tilecount="44" columns="44">
+ <image source="placeholder_tileset.png" width="704" height="16"/>
  <tile id="0">
   <!-- grass: walkable -->
   <properties>
@@ -243,6 +243,41 @@
   <!-- outside the room: blocking -->
   <properties>
    <property name="collidable" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="39">
+  <!-- lecture hall / library: back door (walkable warp, enter from behind) -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+   <property name="warp" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="40">
+  <!-- hostel: back door (walkable warp, enter from behind) -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+   <property name="warp" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="41">
+  <!-- cafeteria / mamak: back door (walkable warp, enter from behind) -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+   <property name="warp" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="42">
+  <!-- academic club room: back door (walkable warp, enter from behind) -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+   <property name="warp" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="43">
+  <!-- interior back door: walkable, leaves by the back -->
+  <properties>
+   <property name="collidable" type="bool" value="false"/>
+   <property name="backExit" type="bool" value="true"/>
   </properties>
  </tile>
 </tileset>

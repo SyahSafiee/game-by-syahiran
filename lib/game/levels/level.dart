@@ -21,6 +21,7 @@ class Level {
   final Map<String, bool> _collisionByTile = {};
   final Set<String> _warpTiles = {};
   final Set<String> _exitTiles = {};
+  final Set<String> _backExitTiles = {};
   late int _mapWidthInTiles;
   late int _mapHeightInTiles;
 
@@ -57,6 +58,7 @@ class Level {
     _collisionByTile.clear();
     _warpTiles.clear();
     _exitTiles.clear();
+    _backExitTiles.clear();
     final tiledMap = map.tileMap.map;
     _mapWidthInTiles = tiledMap.width;
     _mapHeightInTiles = tiledMap.height;
@@ -78,6 +80,9 @@ class Level {
         if (properties?.getValue<bool>('exit') ?? false) {
           _exitTiles.add(_gridKey(x, y));
         }
+        if (properties?.getValue<bool>('backExit') ?? false) {
+          _backExitTiles.add(_gridKey(x, y));
+        }
       }
     }
   }
@@ -87,6 +92,10 @@ class Level {
   /// True if [gridPosition] is a building door (`warp` tile property).
   bool isWarpTile(Vector2 gridPosition) =>
       _warpTiles.contains(_gridKey(gridPosition.x.round(), gridPosition.y.round()));
+
+  /// True if [gridPosition] is an interior's back door (`backExit` property).
+  bool isBackExitTile(Vector2 gridPosition) =>
+      _backExitTiles.contains(_gridKey(gridPosition.x.round(), gridPosition.y.round()));
 
   /// True if [gridPosition] is an interior exit mat (`exit` tile property).
   bool isExitTile(Vector2 gridPosition) =>

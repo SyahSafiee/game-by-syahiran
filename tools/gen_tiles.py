@@ -502,6 +502,53 @@ def void():
     return Tile(rgb('#1c1626'))
 
 
+def back_door_tile(b):
+    """A rear entrance set into the roof's top edge: yellow awning, stone
+    frame and a wooden door, facing north toward the path behind the
+    building. Only some buildings have one."""
+    t = roof_tile(b)
+    stone, stone_l, stone_d = rgb('#b9b5ad'), rgb('#dcd8d0'), rgb('#8c8880')
+    wood, wood_d, wood_l = rgb('#7a5230'), rgb('#4f341d'), rgb('#9a6c42')
+    awning, awning_l, awning_d = rgb('#e8c84a'), rgb('#f6e48a'), rgb('#b8962a')
+    t.rect(2, 0, 13, 15, stone)
+    t.rect(2, 0, 2, 15, stone_l)
+    t.rect(13, 0, 13, 15, stone_d)
+    # awning across the top
+    t.rect(3, 0, 12, 3, awning)
+    t.rect(3, 0, 12, 0, awning_l)
+    t.rect(3, 3, 12, 3, awning_d)
+    for x in range(4, 12, 2):
+        t.p(x, 2, awning_d)
+    # door
+    t.rect(4, 4, 11, 14, wood)
+    t.rect(4, 4, 4, 14, wood_l)
+    t.rect(7, 4, 8, 14, wood_d)
+    for x0 in (5, 9):
+        t.rect(x0, 5, x0 + 1, 8, b.glass)
+        t.p(x0, 5, b.glass_l)
+        t.rect(x0, 11, x0 + 1, 13, wood_l)
+    t.p(7, 10, rgb('#f0c84a'))
+    t.p(8, 10, rgb('#f0c84a'))
+    t.rect(2, 15, 13, 15, OUT)
+    return t
+
+
+def back_exit_inside():
+    """Interior side of a back door: wall with a door in it (walkable exit)."""
+    t = inner_wall()
+    wood, wood_d, wood_l = rgb('#7a5230'), rgb('#4f341d'), rgb('#9a6c42')
+    t.rect(2, 1, 13, 15, rgb('#b9b5ad'))
+    t.rect(4, 2, 11, 15, wood)
+    t.rect(4, 2, 4, 15, wood_l)
+    t.rect(7, 2, 8, 15, wood_d)
+    for x0 in (5, 9):
+        t.rect(x0, 3, x0 + 1, 6, rgb('#8cc4e8'))
+        t.rect(x0, 9, x0 + 1, 13, wood_l)
+    t.p(6, 10, rgb('#f0c84a'))
+    t.p(9, 10, rgb('#f0c84a'))
+    return t
+
+
 def build():
     tiles = [
         grass(0),            # 0
@@ -532,6 +579,9 @@ def build():
         rug(),                                    # 37 rug (walkable)
         void(),                                   # 38 outside the room (blocking)
     ]
+    for b in BUILDINGS:                           # 39-42 back doors per building
+        tiles.append(back_door_tile(b))
+    tiles.append(back_exit_inside())              # 43 interior back door (exit)
     sheet = Image.new('RGBA', (T * len(tiles), T), (0, 0, 0, 0))
     for i, t in enumerate(tiles):
         sheet.paste(t.im, (i * T, 0))
