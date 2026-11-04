@@ -1,0 +1,9 @@
+{
+  "id": "npc_amer",
+  "name": "Amer",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Hey {playerName}. Did you finish the assignment?",
+    "...yeah, me neither. We'll figure it out."
+  ]
+}

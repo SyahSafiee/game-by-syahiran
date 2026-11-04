@@ -1,0 +1,9 @@
+{
+  "id": "npc_john",
+  "name": "John",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "{playerName}! Good timing, I was about to head back to the hostel.",
+    "Come by later, we're just hanging out."
+  ]
+}

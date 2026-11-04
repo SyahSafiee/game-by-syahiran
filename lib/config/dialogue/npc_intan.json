@@ -1,0 +1,9 @@
+{
+  "id": "npc_intan",
+  "name": "Intan",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Morning, {playerName}! Nice day to skip the lecture hall and sit on the grass instead.",
+    "Don't tell the lecturer I said that."
+  ]
+}

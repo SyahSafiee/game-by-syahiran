@@ -41,7 +41,17 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
   late Vector2 _moveFrom;
   late Vector2 _moveTo;
 
-  static const _framePixelSize = 16.0;
+  /// Which direction the *current* press already stepped once for, or null
+  /// if this press hasn't moved yet. Used (with [_heldElapsed]) to gate
+  /// auto-repeat behind [GameConfig.moveRepeatDelay] - see that field's doc.
+  GameDirection? _steppedDirection;
+  double _heldElapsed = 0;
+
+  // Sprite art is drawn at 24x24 source pixels (more room for hair/face
+  // detail than the map's 16x16 tile grid) but still renders at exactly
+  // one displayTileSize box - independent of GameConfig.tileSize, which
+  // only governs map/collision grid math, not character art resolution.
+  static const _framePixelSize = 24.0;
 
   @override
   Future<void> onLoad() async {
@@ -103,8 +113,28 @@ class PlayerComponent extends SpriteAnimationGroupComponent<PlayerAnimState>
     }
 
     final direction = heldDirection;
-    if (direction != null) {
+    if (direction == null) {
+      _steppedDirection = null;
+      _heldElapsed = 0;
+      return;
+    }
+
+    if (direction != _steppedDirection) {
+      // Either a fresh press, or the held direction just changed - either
+      // way, that always moves one tile immediately, no repeat-delay wait.
       _tryStartMove(direction);
+      _steppedDirection = direction;
+      _heldElapsed = 0;
+      return;
+    }
+
+    // Same direction still held after its first step: only start another
+    // glide once the repeat-delay buffer has passed, so a normal tap (which
+    // easily outlasts one glide) never produces a second, unintended tile.
+    _heldElapsed += dt;
+    if (_heldElapsed >= GameConfig.moveRepeatDelay) {
+      _tryStartMove(direction);
+      _heldElapsed = 0;
     }
   }
 

@@ -1,0 +1,9 @@
+{
+  "id": "npc_ajim",
+  "name": "Ajim",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Yo {playerName}! You heading to class too?",
+    "Save me a seat at the back, lah."
+  ]
+}

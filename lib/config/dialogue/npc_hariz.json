@@ -1,0 +1,9 @@
+{
+  "id": "npc_hariz",
+  "name": "Hariz",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Eh {playerName}, curfew's soon. You'd better get moving.",
+    "See you around the hostel."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "npc_ain_najwa",
+  "name": "Ain Najwa",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Hey {playerName}! Perfect timing, I was just about to text you.",
+    "A couple of us are thinking of catching a movie this weekend. You in?",
+    "It'll be fun - just the usual crowd hanging around campus, you know how it is."
+  ],
+  "affectionDelta": 5
+}

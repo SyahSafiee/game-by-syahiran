@@ -1,0 +1,9 @@
+{
+  "id": "npc_azib",
+  "name": "Azib",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "{playerName}! Perfect, the academic club needs one more person for the next event.",
+    "No pressure, but it'll look good on your resume - and it's actually fun."
+  ]
+}

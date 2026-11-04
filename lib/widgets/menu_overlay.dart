@@ -5,6 +5,7 @@ import '../game/inventory/item_data.dart';
 import '../game/menu_screen.dart';
 import '../game/quest/quest_data.dart';
 import '../game/quest/quest_model.dart';
+import '../game/relationship/affection_model.dart';
 
 /// Renders whichever pause-menu panel [screen] points at (or nothing, when
 /// [MenuScreen.closed]) as a centered card - deliberately not full-screen,
@@ -19,8 +20,10 @@ class MenuOverlay extends StatelessWidget {
     required this.screen,
     required this.inventory,
     required this.quests,
+    required this.affection,
     required this.onOpenInventory,
     required this.onOpenQuests,
+    required this.onOpenRelationships,
     required this.onClose,
     required this.onBack,
   });
@@ -28,8 +31,10 @@ class MenuOverlay extends StatelessWidget {
   final MenuScreen screen;
   final InventoryModel inventory;
   final QuestModel quests;
+  final AffectionModel affection;
   final VoidCallback onOpenInventory;
   final VoidCallback onOpenQuests;
+  final VoidCallback onOpenRelationships;
   final VoidCallback onClose;
   final VoidCallback onBack;
 
@@ -59,10 +64,12 @@ class MenuOverlay extends StatelessWidget {
                 MenuScreen.main => _MainMenuPanel(
                   onOpenInventory: onOpenInventory,
                   onOpenQuests: onOpenQuests,
+                  onOpenRelationships: onOpenRelationships,
                   onClose: onClose,
                 ),
                 MenuScreen.inventory => _InventoryPanel(inventory: inventory, onBack: onBack),
                 MenuScreen.quests => _QuestLogPanel(quests: quests, onBack: onBack),
+                MenuScreen.relationships => _RelationshipsPanel(affection: affection, onBack: onBack),
               },
             ),
           ),
@@ -103,11 +110,13 @@ class _MainMenuPanel extends StatelessWidget {
   const _MainMenuPanel({
     required this.onOpenInventory,
     required this.onOpenQuests,
+    required this.onOpenRelationships,
     required this.onClose,
   });
 
   final VoidCallback onOpenInventory;
   final VoidCallback onOpenQuests;
+  final VoidCallback onOpenRelationships;
   final VoidCallback onClose;
 
   @override
@@ -121,6 +130,8 @@ class _MainMenuPanel extends StatelessWidget {
         _MenuOptionButton(label: 'Inventory', onTap: onOpenInventory),
         const SizedBox(height: 8),
         _MenuOptionButton(label: 'Quests', onTap: onOpenQuests),
+        const SizedBox(height: 8),
+        _MenuOptionButton(label: 'Relationships', onTap: onOpenRelationships),
         const SizedBox(height: 8),
         _MenuOptionButton(label: 'Close', onTap: onClose),
       ],
@@ -194,6 +205,54 @@ class _InventoryPanel extends StatelessWidget {
                       ),
                     ),
                     Text('x${entry.quantity}', style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                  ],
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _RelationshipsPanel extends StatelessWidget {
+  const _RelationshipsPanel({required this.affection, required this.onBack});
+
+  final AffectionModel affection;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = affection.entries;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _PanelHeader(title: 'Relationships', onBack: onBack),
+        const SizedBox(height: 8),
+        if (entries.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Text('No one to mention yet.', style: TextStyle(color: Colors.white54)),
+          )
+        else
+          Flexible(
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: entries.length,
+              separatorBuilder: (_, _) => const Divider(color: Colors.white24, height: 12),
+              itemBuilder: (context, index) {
+                final entry = entries[index];
+                final stage = AffectionStage.fromPoints(entry.points);
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.displayName,
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                    Text(stage.label, style: const TextStyle(color: Colors.pinkAccent, fontSize: 12)),
                   ],
                 );
               },

@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/build/
+
+# Local dev-only tooling (e.g. web-preview launch config) - not part of the
+# Flutter project itself.
+.claude/launch.json

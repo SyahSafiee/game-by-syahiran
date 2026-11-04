@@ -3,7 +3,8 @@ import 'quest_data.dart';
 /// Runtime progress for one active quest: which of its objectives (matched
 /// by exact text against [QuestData.objectives]) are done so far.
 class QuestProgress {
-  QuestProgress({required this.questId}) : completedObjectives = <String>{};
+  QuestProgress({required this.questId, Set<String>? completedObjectives})
+    : completedObjectives = completedObjectives ?? <String>{};
 
   final String questId;
   final Set<String> completedObjectives;
@@ -16,6 +17,9 @@ class QuestProgress {
 /// [InventoryModel]. `RpgGame` owns the single instance and wires it to the
 /// dialogue system ([RpgGame] applies `startsQuest`/`completesObjective`
 /// dialogue effects by calling into this) and to the quest log UI.
+///
+/// [toJson]/[loadFromJson] mirror [InventoryModel]'s shape for
+/// [GameSaveService].
 class QuestModel {
   final Map<String, QuestProgress> _active = {};
   final Set<String> _completedQuestIds = {};
@@ -58,5 +62,24 @@ class QuestModel {
       _active.remove(quest.id);
       _completedQuestIds.add(quest.id);
     }
+  }
+
+  Map<String, dynamic> toJson() => {
+    'active': {
+      for (final entry in _active.entries) entry.key: entry.value.completedObjectives.toList(),
+    },
+    'completed': _completedQuestIds.toList(),
+  };
+
+  void loadFromJson(Map<String, dynamic> json) {
+    _active.clear();
+    _completedQuestIds.clear();
+    final active = json['active'] as Map<String, dynamic>? ?? const {};
+    for (final entry in active.entries) {
+      final objectives = (entry.value as List).cast<String>().toSet();
+      _active[entry.key] = QuestProgress(questId: entry.key, completedObjectives: objectives);
+    }
+    final completed = json['completed'] as List<dynamic>? ?? const [];
+    _completedQuestIds.addAll(completed.cast<String>());
   }
 }

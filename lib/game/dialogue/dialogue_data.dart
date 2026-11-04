@@ -27,9 +27,9 @@ class DialogueObjectiveRef {
 ///
 /// [givesItem], [startsQuest], and [completesObjective] are optional
 /// inventory/quest hooks (Phase 3): when the conversation ends, [RpgGame]
-/// applies whichever of these are set. Phase 4 (affection/romance) should
-/// add a similarly optional field here (e.g. `affectionDelta`) rather than
-/// its own separate dialogue format.
+/// applies whichever of these are set. [affectionDelta] is the Phase 4
+/// (affection/romance) hook, applied the exact same way, keyed by [id]
+/// against [AffectionModel].
 class DialogueData {
   const DialogueData({
     required this.id,
@@ -40,6 +40,7 @@ class DialogueData {
     this.givesItemQuantity = 1,
     this.startsQuest,
     this.completesObjective,
+    this.affectionDelta,
   });
 
   factory DialogueData.fromJson(Map<String, dynamic> json) {
@@ -54,6 +55,7 @@ class DialogueData {
       completesObjective: json['completesObjective'] == null
           ? null
           : DialogueObjectiveRef.fromJson(json['completesObjective'] as Map<String, dynamic>),
+      affectionDelta: json['affectionDelta'] as int?,
     );
   }
 
@@ -77,6 +79,10 @@ class DialogueData {
   /// Quest objective to mark complete when this conversation ends, or
   /// `null` for none.
   final DialogueObjectiveRef? completesObjective;
+
+  /// Affection points to add for this NPC (keyed by [id]) when the
+  /// conversation ends, or `null` for no change. Can be negative.
+  final int? affectionDelta;
 }
 
 /// Loads and caches [DialogueData] from the `lib/config/dialogue/` folder.

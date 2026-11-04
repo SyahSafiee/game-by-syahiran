@@ -1,0 +1,9 @@
+{
+  "id": "npc_aleeya",
+  "name": "Aleeya",
+  "portrait": "assets/sprites/npc_spritesheet.png",
+  "lines": [
+    "Hi {playerName}! I was just reviewing my notes out here, it's too stuffy inside.",
+    "Want to study together sometime?"
+  ]
+}
